@@ -6,7 +6,7 @@ import webbrowser
 from openpyxl import Workbook
 
 
-arquivo = r"C:\Users\Pichau\Desktop\faculdade\automação\tarefas.csv"  
+arquivo = r"C:\Users\Pichau\Desktop\faculdade\automação\tarefas.csv"  #verificar qual o caminho do csv
 
 
 if not os.path.exists(arquivo):
