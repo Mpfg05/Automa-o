@@ -72,5 +72,6 @@ def executar_tarefas():
 executar_tarefas()
   
 def gerar_relatorio:
-
-
+  wb = Workbook()
+  ws = wb.active
+  ws.title = "Relatório de Execução de tarefas"
