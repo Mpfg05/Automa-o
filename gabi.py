@@ -50,6 +50,8 @@ def executar_tarefas():
     # Lê as tarefas do CSV
     df = pd.read_csv("posicoes.csv")
 
+    dados_relatorio= []
+
     for _, tarefa in df.iterrows():
         x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["Ação"], tarefa["Texto"]
 
@@ -76,3 +78,5 @@ def gerar_relatorio:
   ws = wb.active
   ws.title = "Relatório de Execução de tarefas"
   ws.append(["Ação , "X", "Y", "Texto", "Status", "Tempo de Execução (s)"])
+  for dados in dados: 
+    ws.append(dados)
