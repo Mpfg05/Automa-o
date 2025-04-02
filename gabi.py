@@ -51,7 +51,7 @@ def executar_tarefas():
     df = pd.read_csv("posicoes.csv")
 
     for _, tarefa in df.iterrows():
-        x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["acao"], tarefa["texto"]
+        x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["Ação"], tarefa["Texto"]
 
         try:
             if acao == "clique":
@@ -75,3 +75,4 @@ def gerar_relatorio:
   wb = Workbook()
   ws = wb.active
   ws.title = "Relatório de Execução de tarefas"
+  ws.append(["Ação , "X", "Y", "Texto", "Status", "Tempo de Execução (s)"])
