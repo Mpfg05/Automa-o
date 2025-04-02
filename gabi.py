@@ -43,6 +43,7 @@ capturar_posicoes()
 def executar_tarefas():
     webbrowser.open("https://www.youtube.com")
     time.sleep(5)
+    inicio = time.time()
 
     df = pd.read_csv("posicoes.csv")
     dados_relatorio = []
