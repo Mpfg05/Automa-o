@@ -72,7 +72,7 @@ def executar_tarefas():
             print(f"Erro ao executar {acao}: {e}")
             dados_relatorio.append([acao, x, y, texto, f"Erro: {e}", 0])
 
-    gerar_relatorio(dados_relatorio)
+    executar_tarefas()
 
 def gerar_relatorio(dados_relatorio):
     wb = Workbook()
