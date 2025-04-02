@@ -53,7 +53,7 @@ def executar_tarefas():
     dados_relatorio= []
 
     for _, tarefa in df.iterrows():
-        x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["Ação"], tarefa["Texto"]
+        x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["acao"], tarefa["texto"]
 
         try:
             if acao == "clique":
