@@ -42,7 +42,7 @@ capturar_posicoes()
 #  Função para ler a tabela e executar ações automaticamente
 def executar_tarefas():
     webbrowser.open("https://www.youtube.com")
-    time.sleep(5)
+    time.sleep(3)
     inicio = time.time()
 
     df = pd.read_csv("posicoes.csv")
@@ -60,7 +60,7 @@ def executar_tarefas():
                 pyautogui.click(x, y)
                 pyautogui.write(texto, interval=0.2)
                 pyautogui.press("enter")
-                time.sleep(3)
+                time.sleep(2)
 
             fim = time.time()
             tempo_execucao = round(fim - inicio, 2)
