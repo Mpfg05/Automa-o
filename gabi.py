@@ -39,27 +39,23 @@ def capturar_posicoes(nome_arquivo="posicoes.csv"):
     print(f"Posições salvas em '{nome_arquivo}'!")
 
 capturar_posicoes()
-  
+
 #  Função para ler a tabela e executar ações automaticamente
 def executar_tarefas():
-    #  Abrir YouTube primeiro
     webbrowser.open("https://www.youtube.com")
-    time.sleep(5)  # Espera carregar
+    time.sleep(5)
 
-    # Lê as tarefas do CSV
     df = pd.read_csv("posicoes.csv")
-
     dados_relatorio = []
 
     for _, tarefa in df.iterrows():
         x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["acao"], tarefa["texto"]
 
         try:
-            inicio = time.time()  # Marca o tempo de execução
+            inicio = time.time()
             if acao == "clique":
                 pyautogui.click(x, y)
                 time.sleep(2)
-
             elif acao == "digitar":
                 pyautogui.click(x, y)
                 pyautogui.write(texto, interval=0.2)
@@ -68,7 +64,6 @@ def executar_tarefas():
 
             fim = time.time()
             tempo_execucao = round(fim - inicio, 2)
-
             print(f"Ação {acao} executada em ({x}, {y})!")
 
             dados_relatorio.append([acao, x, y, texto, "Sucesso", tempo_execucao])
@@ -82,14 +77,13 @@ def executar_tarefas():
 def gerar_relatorio(dados_relatorio):
     wb = Workbook()
     ws = wb.active
-    ws.title = "Relatório de Execução de tarefas"
-    
-    # Cabeçalho corrigido
+    ws.title = "Relatório de Execução de Tarefas"
+
     ws.append(["Ação", "X", "Y", "Texto", "Status", "Tempo de Execução (s)"])
     
-    for linha in dados_relatorio: 
+    for linha in dados_relatorio:
         ws.append(linha)
-    
+
     wb.save("relatorio_execucao.xlsx")
     print("Relatório gerado com sucesso: 'relatorio_execucao.xlsx'")
 
