@@ -37,6 +37,9 @@ def capturar_posicoes(nome_arquivo="posicoes.csv"):
 
     print(f"Posições salvas em '{nome_arquivo}'!")
 
+
+capturar_posicoes()
+  
 #  Função para ler a tabela e executar ações automaticamente
 def executar_tarefas():
 
@@ -66,7 +69,8 @@ def executar_tarefas():
         except Exception as e:
             print(f"Erro ao executar {acao}: {e}")
 
-capturar_posicoes()  # Primeiro, capturar as posições do mouse
-executar_tarefas()  # Depois, executar as ações salvas
+executar_tarefas()
+  
+def gerar_relatorio:
 
 
