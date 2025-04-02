@@ -21,8 +21,7 @@ def capturar_posicoes(nome_arquivo="posicoes.csv"):
             texto = input("Se for digitar, escreva o texto (ou deixe vazio): ").strip()
 
             dados.append([x, y, acao, texto])
-
-            continuar = input("Deseja capturar mais posições? (s/n): ").strip().lower()
+            
             if continuar != 's':
                 break
 
