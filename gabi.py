@@ -87,4 +87,4 @@ def gerar_relatorio(dados_relatorio):
     wb.save("relatorio_execucao.xlsx")
     print("Relatório gerado com sucesso: 'relatorio_execucao.xlsx'")
 
-executar_tarefas()
+gerar_relatorio()
