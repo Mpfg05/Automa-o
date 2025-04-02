@@ -4,6 +4,7 @@ import pandas as pd
 import pyautogui
 import time
 import webbrowser
+from openpyxl import Workbook
 
 #  Função para capturar posições do mouse
 def capturar_posicoes(nome_arquivo="posicoes.csv"):
@@ -37,12 +38,10 @@ def capturar_posicoes(nome_arquivo="posicoes.csv"):
 
     print(f"Posições salvas em '{nome_arquivo}'!")
 
-
 capturar_posicoes()
   
 #  Função para ler a tabela e executar ações automaticamente
 def executar_tarefas():
-
     #  Abrir YouTube primeiro
     webbrowser.open("https://www.youtube.com")
     time.sleep(5)  # Espera carregar
@@ -50,12 +49,13 @@ def executar_tarefas():
     # Lê as tarefas do CSV
     df = pd.read_csv("posicoes.csv")
 
-    dados_relatorio= []
+    dados_relatorio = []
 
     for _, tarefa in df.iterrows():
         x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["acao"], tarefa["texto"]
 
         try:
+            inicio = time.time()  # Marca o tempo de execução
             if acao == "clique":
                 pyautogui.click(x, y)
                 time.sleep(2)
@@ -66,17 +66,31 @@ def executar_tarefas():
                 pyautogui.press("enter")
                 time.sleep(3)
 
+            fim = time.time()
+            tempo_execucao = round(fim - inicio, 2)
+
             print(f"Ação {acao} executada em ({x}, {y})!")
+
+            dados_relatorio.append([acao, x, y, texto, "Sucesso", tempo_execucao])
 
         except Exception as e:
             print(f"Erro ao executar {acao}: {e}")
+            dados_relatorio.append([acao, x, y, texto, f"Erro: {e}", 0])
+
+    gerar_relatorio(dados_relatorio)
+
+def gerar_relatorio(dados_relatorio):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Relatório de Execução de tarefas"
+    
+    # Cabeçalho corrigido
+    ws.append(["Ação", "X", "Y", "Texto", "Status", "Tempo de Execução (s)"])
+    
+    for linha in dados_relatorio: 
+        ws.append(linha)
+    
+    wb.save("relatorio_execucao.xlsx")
+    print("Relatório gerado com sucesso: 'relatorio_execucao.xlsx'")
 
 executar_tarefas()
-  
-def gerar_relatorio:
-  wb = Workbook()
-  ws = wb.active
-  ws.title = "Relatório de Execução de tarefas"
-  ws.append(["Ação , "X", "Y", "Texto", "Status", "Tempo de Execução (s)"])
-  for dados in dados: 
-    ws.append(dados)
