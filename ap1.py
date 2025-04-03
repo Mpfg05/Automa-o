@@ -4,113 +4,124 @@ import pyautogui
 import time
 import webbrowser
 from openpyxl import Workbook
+from datetime import datetime 
 
 
-arquivo = r"C:\Users\Pichau\Desktop\faculdade\automação\tarefas.csv"  #verificar qual o caminho do csv
+tarefas_arquivo = "tarefas.csv"
 
-
-if not os.path.exists(arquivo):
-    print(f"Arquivo NÃO encontrado: {arquivo}")
+if not os.path.exists(tarefas_arquivo):
+    print(f"Arquivo NÃO encontrado: {tarefas_arquivo}")
     exit()
 
+df = pd.read_csv(tarefas_arquivo)
+# Remover linhas vazias ou inválidas
+df = df.dropna(subset=["Tarefa", "Tipo"])
 
-df = pd.read_csv(arquivo)
 tarefas = df.to_dict(orient="records")
-
-
 relatorio = []
-
-
 
 def executar_tarefa(tarefa):
     """Executa uma ação com base no tipo de tarefa e registra o resultado."""
-    tipo = tarefa["Tipo"]
-    dado = str(tarefa["Dado"])  
-    inicio = time.time()
+    tipo = str(tarefa["Tipo"]).strip().lower()  # Normaliza para evitar erros
+    dado = str(tarefa["Dado"]).strip()
 
+    inicio = time.time()  # Marca o tempo antes da execução
+    
     try:
         if tipo == "abrir_navegador":
-            pyautogui.press("win")
-
-            pyautogui.write("Chrome", interval=0.2)
-            webbrowser.open(dado)  
-            time.sleep(5)  
-
+            webbrowser.open(dado)
+        
         elif tipo == "click":
             partes = dado.split(",")
             if len(partes) == 2 and partes[0].isdigit() and partes[1].isdigit():
-                x, y = map(int, partes)  
+                x, y = map(int, partes)
                 pyautogui.click(x, y)
             else:
                 raise ValueError(f"Coordenadas inválidas: {dado}")
-
+        
         elif tipo == "texto":
-            pyautogui.write(dado)  
-
+            pyautogui.write(dado)
+        
         elif tipo == "tecla":
-            pyautogui.press(dado)  
-
+            pyautogui.press(dado)
+        
         elif tipo == "espera":
-            time.sleep(int(dado))  
+            try:
+                tempo = float(dado) if dado else 1  # Tempo padrão = 1s se vazio
+                time.sleep(tempo)
+            except ValueError:
+                raise ValueError(f"Valor inválido para espera: {dado}")
+        
+        elif tipo == "scroll":
+            try:
+                pyautogui.scroll(int(dado))
+            except ValueError:
+                raise ValueError(f"Valor inválido para scroll: {dado}")
 
         else:
             raise ValueError(f"Tipo desconhecido: {tipo}")
-
+        
         status = "Sucesso"
+    
     except Exception as e:
         status = f"Erro: {str(e)}"
-
-    tempo_execucao = round(time.time() - inicio, 2)  
+    
+    fim = time.time()  # Marca o tempo após a execução
+    tempo_execucao = round(fim - inicio, 2)  # Calcula o tempo decorrido
+    
     relatorio.append({"Tarefa": tarefa["Tarefa"], "Status": status, "Tempo (s)": tempo_execucao})
-
+# Iniciar automação
 print("Abrindo o navegador...")
 time.sleep(2)
 pyautogui.press("win")
-
 pyautogui.write("Chrome", interval=0.2)
 time.sleep(1)
 pyautogui.press("enter")
 time.sleep(2)
 webbrowser.open("https://www.google.com")
 time.sleep(2)
-pyautogui.write("www.monstercat.com", interval=0.1)
+pyautogui.write("www.youtube.com", interval=0.1)
 time.sleep(2)
 pyautogui.press("enter")
-time.sleep(2)  
+time.sleep(2)
 
 x_pagina, y_pagina = 379, 297  
 pyautogui.click(x_pagina, y_pagina)
 time.sleep(4)
 
-x_menu, y_menu = 2189, 143  
-pyautogui.click(x_menu, y_menu)
+x_pesquisa, y_pesquisa = 1234, 121  
+pyautogui.click(x_pesquisa, y_pesquisa)
 time.sleep(2)
 
-x_about, y_about = 2215, 324  
-pyautogui.click(x_about, y_about)
-time.sleep(2)
-
-x_about1, y_about1 = 2224, 361  
-pyautogui.click(x_about1, y_about1)
+pyautogui.write("Faculdade Impacta", interval=0.1)
 time.sleep(1)
+pyautogui.press("enter")
+time.sleep(2)
+pyautogui.scroll(-400)
+time.sleep(2)
+
+x_video, y_video = 1113, 773 
+time.sleep(2)
+pyautogui.click(x_video, y_video)
+time.sleep(2)
+
 pyautogui.alert("Automação finalizada! Começando processo de relatório...")
 time.sleep(1)
+
 
 for tarefa in tarefas:
     print(f"Executando: {tarefa['Tarefa']}")
     executar_tarefa(tarefa)
 
+
 wb = Workbook()
 ws = wb.active
 ws.title = "Relatório de Execução"
-
 ws.append(["Tarefa", "Status", "Tempo (s)"])
 
 for linha in relatorio:
     ws.append([linha["Tarefa"], linha["Status"], linha["Tempo (s)"]])
 
-relatorio_arquivo = r"C:\Users\Pichau\Desktop\faculdade\automação\relatorio_execucao.xlsx"
-os.makedirs(os.path.dirname(relatorio_arquivo), exist_ok=True)
+relatorio_arquivo = datetime.now().strftime("relatorio_execucao%Y%m%d_%H%M%S.xlsx")
 wb.save(relatorio_arquivo)
 print(f"Relatório salvo em: {relatorio_arquivo}")
-
