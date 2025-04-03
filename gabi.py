@@ -1,127 +1,72 @@
 import os
+import csv
 import pandas as pd
 import pyautogui
 import time
 import webbrowser
-from openpyxl import Workbook
-from datetime import datetime 
 
+#  Função para capturar posições do mouse
+def capturar_posicoes(nome_arquivo="posicoes.csv"):
+    print("Para capturar a posição do mouse, arraste para o lugar desejado e aguarde!")
+    dados = []  # Lista para armazenar coordenadas e ações
 
-tarefas_arquivo = "tarefas.csv"
+    while True:
+        try:
+            input("Posicione o mouse e pressione Enter... (ou digite 'sair' para finalizar) ")
+            x, y = pyautogui.position()
+            print(f"Posição capturada: X={x}, Y={y}")
 
-if not os.path.exists(tarefas_arquivo):
-    print(f"Arquivo NÃO encontrado: {tarefas_arquivo}")
-    exit()
+            acao = input("Digite a ação (clique/digitar): ").strip().lower()
+            texto = input("Se for digitar, escreva o texto (ou deixe vazio): ").strip()
 
-df = pd.read_csv(tarefas_arquivo)
-# Remover linhas vazias ou inválidas
-df = df.dropna(subset=["Tarefa", "Tipo"])
+            dados.append([x, y, acao, texto])
 
-tarefas = df.to_dict(orient="records")
-relatorio = []
+            continuar = input("Deseja capturar mais posições? (s/n): ").strip().lower()
+            if continuar != 's':
+                break
 
-def executar_tarefa(tarefa):
-    """Executa uma ação com base no tipo de tarefa e registra o resultado."""
-    tipo = str(tarefa["Tipo"]).strip().lower()  # Normaliza para evitar erros
-    dado = str(tarefa["Dado"]).strip()
+        except KeyboardInterrupt:
+            print("\nCaptura de posições interrompida!")
+            break
 
-    inicio = time.time()  # Marca o tempo antes da execução
-    
-    try:
-        if tipo == "abrir_navegador":
-            webbrowser.open(dado)
-        
-        elif tipo == "click":
-            partes = dado.split(",")
-            if len(partes) == 2 and partes[0].isdigit() and partes[1].isdigit():
-                x, y = map(int, partes)
+    #  Salva os dados no arquivo CSV
+    with open(nome_arquivo, "w", newline="") as b:
+        writer = csv.writer(b)
+        writer.writerow(["x", "y", "acao", "texto"])  # Cabeçalho
+        writer.writerows(dados)
+
+    print(f"Posições salvas em '{nome_arquivo}'!")
+
+#  Função para ler a tabela e executar ações automaticamente
+def executar_tarefas():
+
+    #  Abrir YouTube primeiro
+    webbrowser.open("https://www.youtube.com")
+    time.sleep(5)  # Espera carregar
+
+    # Lê as tarefas do CSV
+    df = pd.read_csv("posicoes.csv")
+
+    for _, tarefa in df.iterrows():
+        x, y, acao, texto = int(tarefa["x"]), int(tarefa["y"]), tarefa["acao"], tarefa["texto"]
+
+        try:
+            if acao == "clique":
                 pyautogui.click(x, y)
-            else:
-                raise ValueError(f"Coordenadas inválidas: {dado}")
-        
-        elif tipo == "texto":
-            pyautogui.write(dado)
-        
-        elif tipo == "tecla":
-            pyautogui.press(dado)
-        
-        elif tipo == "espera":
-            try:
-                tempo = float(dado) if dado else 1  # Tempo padrão = 1s se vazio
-                time.sleep(tempo)
-            except ValueError:
-                raise ValueError(f"Valor inválido para espera: {dado}")
-        
-        elif tipo == "scroll":
-            try:
-                pyautogui.scroll(int(dado))
-            except ValueError:
-                raise ValueError(f"Valor inválido para scroll: {dado}")
+                time.sleep(2)
 
-        else:
-            raise ValueError(f"Tipo desconhecido: {tipo}")
-        
-        status = "Sucesso"
-    
-    except Exception as e:
-        status = f"Erro: {str(e)}"
-    
-    fim = time.time()  # Marca o tempo após a execução
-    tempo_execucao = round(fim - inicio, 2)  # Calcula o tempo decorrido
-    
-    relatorio.append({"Tarefa": tarefa["Tarefa"], "Status": status, "Tempo (s)": tempo_execucao})
-# Iniciar automação
-print("Abrindo o navegador...")
-time.sleep(2)
-pyautogui.press("win")
-pyautogui.write("Chrome", interval=0.2)
-time.sleep(1)
-pyautogui.press("enter")
-time.sleep(2)
-webbrowser.open("https://www.google.com")
-time.sleep(2)
-pyautogui.write("www.youtube.com", interval=0.1)
-time.sleep(2)
-pyautogui.press("enter")
-time.sleep(2)
+            elif acao == "digitar":
+                pyautogui.click(x, y)
+                pyautogui.write(texto, interval=0.2)
+                pyautogui.press("enter")
+                time.sleep(3)
 
-x_pagina, y_pagina = 379, 297  
-pyautogui.click(x_pagina, y_pagina)
-time.sleep(4)
+            print(f"Ação {acao} executada em ({x}, {y})!")
 
-x_pesquisa, y_pesquisa = 1234, 121  
-pyautogui.click(x_pesquisa, y_pesquisa)
-time.sleep(2)
+        except Exception as e:
+            print(f"Erro ao executar {acao}: {e}")
 
-pyautogui.write("Faculdade Impacta", interval=0.1)
-time.sleep(1)
-pyautogui.press("enter")
-time.sleep(2)
-pyautogui.scroll(-400)
-time.sleep(2)
-
-x_video, y_video = 1113, 773 
-time.sleep(2)
-pyautogui.click(x_video, y_video)
-time.sleep(2)
-
-pyautogui.alert("Automação finalizada! Começando processo de relatório...")
-time.sleep(1)
+capturar_posicoes()  # Primeiro, capturar as posições do mouse
+executar_tarefas()  # Depois, executar as ações salvas
 
 
-for tarefa in tarefas:
-    print(f"Executando: {tarefa['Tarefa']}")
-    executar_tarefa(tarefa)
-
-
-wb = Workbook()
-ws = wb.active
-ws.title = "Relatório de Execução"
-ws.append(["Tarefa", "Status", "Tempo (s)"])
-
-for linha in relatorio:
-    ws.append([linha["Tarefa"], linha["Status"], linha["Tempo (s)"]])
-
-relatorio_arquivo = datetime.now().strftime("relatorio_execucao%Y%m%d_%H%M%S.xlsx")
-wb.save(relatorio_arquivo)
-print(f"Relatório salvo em: {relatorio_arquivo}")
