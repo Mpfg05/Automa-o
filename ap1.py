@@ -7,7 +7,7 @@ from openpyxl import Workbook
 from datetime import datetime 
 
 
-tarefas_arquivo = "tarefas.csv"
+tarefas_arquivo = "tarefas.csv" #Caso não ache o arquivo, coloque a rota que foi instalado o tarefas.csv -- Exemplo r"C:\Users\2401765\Desktop\Automacao-main\Automacao-main\tarefas.csv"
 
 if not os.path.exists(tarefas_arquivo):
     print(f"Arquivo NÃO encontrado: {tarefas_arquivo}")
@@ -89,7 +89,7 @@ x_pagina, y_pagina = 379, 297
 pyautogui.click(x_pagina, y_pagina)
 time.sleep(4)
 
-x_pesquisa, y_pesquisa = 1234, 121  
+x_pesquisa, y_pesquisa = 693, 117 
 pyautogui.click(x_pesquisa, y_pesquisa)
 time.sleep(2)
 
