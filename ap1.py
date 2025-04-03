@@ -14,7 +14,7 @@ if not os.path.exists(tarefas_arquivo):
     exit()
 
 df = pd.read_csv(tarefas_arquivo)
-# Remover linhas vazias ou inválidas
+
 df = df.dropna(subset=["Tarefa", "Tipo"])
 
 tarefas = df.to_dict(orient="records")
@@ -25,7 +25,7 @@ def executar_tarefa(tarefa):
     tipo = str(tarefa["Tipo"]).strip().lower()  # Normaliza para evitar erros
     dado = str(tarefa["Dado"]).strip()
 
-    inicio = time.time()  # Marca o tempo antes da execução
+    inicio = time.time() 
     
     try:
         if tipo == "abrir_navegador":
@@ -47,7 +47,7 @@ def executar_tarefa(tarefa):
         
         elif tipo == "espera":
             try:
-                tempo = float(dado) if dado else 1  # Tempo padrão = 1s se vazio
+                tempo = float(dado) if dado else 1 
                 time.sleep(tempo)
             except ValueError:
                 raise ValueError(f"Valor inválido para espera: {dado}")
@@ -66,11 +66,11 @@ def executar_tarefa(tarefa):
     except Exception as e:
         status = f"Erro: {str(e)}"
     
-    fim = time.time()  # Marca o tempo após a execução
-    tempo_execucao = round(fim - inicio, 2)  # Calcula o tempo decorrido
+    fim = time.time()  
+    tempo_execucao = round(fim - inicio, 2)  
     
     relatorio.append({"Tarefa": tarefa["Tarefa"], "Status": status, "Tempo (s)": tempo_execucao})
-# Iniciar automação
+
 print("Abrindo o navegador...")
 time.sleep(2)
 pyautogui.press("win")
