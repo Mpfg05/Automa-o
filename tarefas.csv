@@ -1,5 +1,5 @@
 Tarefa,Tipo,Dado
-Abrir navegador,click,navegador_icone
 Digitar site,texto,www.exemplo.com
 Pressionar Enter,tecla,enter
-Esperar,espera,5
+Dar Scroll,scroll,0
+Esperar,espera,1
